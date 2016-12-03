@@ -219,7 +219,9 @@ def silenceRemovalWrapper(inputFile, smoothingWindow, weight):
     [Fs, x] = audioBasicIO.readAudioFile(inputFile)                                        # read audio signal
     segmentLimits = aS.silenceRemoval(x, Fs, 0.05, 0.05, smoothingWindow, weight, True)    # get onsets
     for i, s in enumerate(segmentLimits):
-        strOut = "{0:s}_{1:.3f}-{2:.3f}.wav".format(inputFile[0:-4], s[0], s[1])
+        startsecs = str("{0:5.3f}".format(s[0])).zfill(9)
+        endsecs = str("{0:5.3f}".format(s[1])).zfill(9)
+        strOut = "{0:s}_{1:s}-{2:s}.wav".format(inputFile[0:-4], startsecs, endsecs)
         wavfile.write(strOut, Fs, x[int(Fs * s[0]):int(Fs * s[1])])
 
 
