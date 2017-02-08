@@ -20,6 +20,7 @@ import audioBasicIO
 import utilities as uT
 import scipy.io.wavfile as wavfile
 import matplotlib.patches
+from moviepy.editor import *
 
 
 def dirMp3toWavWrapper(directory, samplerate, channels):
@@ -227,6 +228,14 @@ def silenceRemovalWrapper(inputFile, smoothingWindow, weight):
         endsecs = str("{0:5.3f}".format(s[1])).zfill(9)
         strOut = "{0:s}_{1:s}-{2:s}.wav".format(inputFile[0:-4], startsecs, endsecs)
         wavfile.write(strOut, Fs, x[int(Fs * s[0]):int(Fs * s[1])])
+        videoresult = VideoFileClip("{0:s}.mp4".format(inputFile[0:-4])).subclip(s[0],s[1])
+        videoresult.write_videofile(("{0:s}_{1:s}-{2:s}.mp4".format(inputFile[0:-4], startsecs, endsecs)), 
+					                               write_logfile=False, 
+					                               codec='libx264', 
+					                               audio_codec='aac',
+                                                   temp_audiofile=("{0:s}_{1:s}-{2:s}.m4a".format(inputFile[0:-4], startsecs, endsecs)), 
+					                               preset="ultrafast", 
+					                               remove_temp=True )
 
 
 def speakerDiarizationWrapper(inputFile, numSpeakers, useLDA):
