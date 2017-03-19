@@ -222,12 +222,12 @@ def silenceRemovalWrapper(inputFile, smoothingWindow, weight):
         raise Exception("Input audio file not found!")
 
     [Fs, x] = audioBasicIO.readAudioFile(inputFile)                                        # read audio signal
-    segmentLimits = aS.silenceRemoval(x, Fs, 0.05, 0.05, smoothingWindow, weight, True)    # get onsets
+    segmentLimits = aS.silenceRemoval(x, Fs, 0.05, 0.05, smoothingWindow, weight, False)    # get onsets
     for i, s in enumerate(segmentLimits):
         startsecs = str("{0:5.3f}".format(s[0])).zfill(9)
         endsecs = str("{0:5.3f}".format(s[1])).zfill(9)
         strOut = "{0:s}_{1:s}-{2:s}.wav".format(inputFile[0:-4], startsecs, endsecs)
-        wavfile.write(strOut, Fs, x[int(Fs * s[0]):int(Fs * s[1])])
+        #wavfile.write(strOut, Fs, x[int(Fs * s[0]):int(Fs * s[1])])
         videoresult = VideoFileClip("{0:s}.mp4".format(inputFile[0:-4])).subclip(s[0],s[1])
         videoresult.write_videofile(("{0:s}_{1:s}-{2:s}.mp4".format(inputFile[0:-4], startsecs, endsecs)), 
 					                               write_logfile=False, 
