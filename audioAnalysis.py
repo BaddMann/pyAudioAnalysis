@@ -228,7 +228,7 @@ def silenceRemovalWrapper(inputFile, smoothingWindow, weight):
         endsecs = str("{0:5.3f}".format(s[1])).zfill(9)
         strOut = "{0:s}_{1:s}-{2:s}.wav".format(inputFile[0:-4], startsecs, endsecs)
         #wavfile.write(strOut, Fs, x[int(Fs * s[0]):int(Fs * s[1])])
-        videoresult = VideoFileClip("{0:s}.mp4".format(inputFile[0:-4])).subclip(s[0],s[1])
+        videoresult = VideoFileClip("{0:s}.mp4".format(inputFile[0:-4])).subclip(s[0]-0.25,s[1]+0.25)
         videoresult.write_videofile(("{0:s}_{1:s}-{2:s}.mp4".format(inputFile[0:-4], startsecs, endsecs)), 
 					                               write_logfile=False, 
 					                               codec='libx264', 
