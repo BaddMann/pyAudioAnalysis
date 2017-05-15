@@ -721,17 +721,24 @@ def dirWavFeatureExtraction(dirName, mtWin, mtStep, stWin, stStep, computeBEAT=F
     allMtFeatures = numpy.array([])
     processingTimes = []
 
-    types = ('*.wav', '*.aif',  '*.aiff')
+    types = ('*.wav', '*.aif',  '*.aiff', '*.mp3')
     wavFilesList = []
     for files in types:
         wavFilesList.extend(glob.glob(os.path.join(dirName, files)))
 
     wavFilesList = sorted(wavFilesList)    
 
-    for wavFile in wavFilesList:        
-        [Fs, x] = audioBasicIO.readAudioFile(wavFile)            # read file        
-        t1 = time.clock()
-        x = audioBasicIO.stereo2mono(x)                          # convert stereo to mono
+    for i, wavFile in enumerate(wavFilesList):        
+        print "Analyzing file {0:d} of {1:d}: {2:s}".format(i+1, len(wavFilesList), wavFile.encode('utf-8'))
+        if os.stat(wavFile).st_size == 0:
+            print "   (EMPTY FILE -- SKIPPING)"
+            continue        
+        [Fs, x] = audioBasicIO.readAudioFile(wavFile)            # read file                
+        t1 = time.clock()        
+        x = audioBasicIO.stereo2mono(x)                          # convert stereo to mono                
+        if x.shape[0]<float(Fs)/10:
+            print "  (AUDIO FILE TOO SMALL - SKIPPING)"
+            continue
         if computeBEAT:                                          # mid-term feature extraction for current file
             [MidTermFeatures, stFeatures] = mtFeatureExtraction(x, Fs, round(mtWin * Fs), round(mtStep * Fs), round(Fs * stWin), round(Fs * stStep))
             [beat, beatConf] = beatExtraction(stFeatures, stStep)

@@ -70,15 +70,15 @@ def readAudioFile(path):
     extension = os.path.splitext(path)[1]
 
     try:
-        if extension.lower() == '.wav':
-            [Fs, x] = wavfile.read(path)
-        elif extension.lower() == '.aif' or extension.lower() == '.aiff':
+        #if extension.lower() == '.wav':
+            #[Fs, x] = wavfile.read(path)
+        if extension.lower() == '.aif' or extension.lower() == '.aiff':
             s = aifc.open(path, 'r')
             nframes = s.getnframes()
             strsig = s.readframes(nframes)
             x = numpy.fromstring(strsig, numpy.short).byteswap()
             Fs = s.getframerate()
-        elif extension.lower() == '.mp3' or extension.lower() == '.MP3':
+        elif extension.lower() == '.mp3' or extension.lower() == '.wav':
             audiofile = AudioSegment.from_file(path)
             data = numpy.fromstring(audiofile._data, numpy.int16)
             Fs = audiofile.frame_rate
@@ -92,6 +92,11 @@ def readAudioFile(path):
     except IOError: 
         print "Error: file not found or other I/O error."
         return (-1,-1)
+
+    if x.ndim==2:
+        if x.shape[1]==1:
+            x = x.flatten()
+
     return (Fs, x)
 
 def stereo2mono(x):
@@ -100,9 +105,12 @@ def stereo2mono(x):
     '''
     if x.ndim==1:
         return x
-    else:
-        if x.ndim==2:
-            return ( (x[:,1] / 2) + (x[:,0] / 2) )
+    elif x.ndim==2:
+        if x.shape[1]==1:
+            return x.flatten()
         else:
-            return -1
+            if x.shape[1]==2:
+                return ( (x[:,1] / 2) + (x[:,0] / 2) )
+            else:
+                return -1
 
